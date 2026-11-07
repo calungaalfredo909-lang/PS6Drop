@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PS6 Raffle — Win a PlayStation 6 for just $10 in USDT</title>
+  <meta name="description" content="Win a PlayStation 6 for just $10 in USDT (TRC20). Limited spots. Audited raffle. Guaranteed delivery." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <style>
+    :root { --ps-blue: #003791; --ps-blue-light: #0066ff; --neon-cyan: #00e5ff; --neon-green: #00ff88; }
+    * { -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: #05060a; color: #e6edf3; overflow-x: hidden; }
+    .bg-grid { background-image: linear-gradient(rgba(0, 102, 255, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 102, 255, 0.06) 1px, transparent 1px); background-size: 40px 40px; }
+    .glow-blue { box-shadow: 0 0 40px rgba(0, 102, 255, 0.45); }
+    .text-gradient { background: linear-gradient(135deg, #00e5ff 0%, #0066ff 50%, #00ff88 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .btn-primary { background: linear-gradient(135deg, #0066ff 0%, #003791 100%); transition: all .25s ease; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0, 102, 255, 0.6); }
+    .card { background: rgba(15, 20, 32, 0.75); border: 1px solid rgba(0, 102, 255, 0.18); backdrop-filter: blur(12px); }
+    .card-hover { transition: all .3s ease; }
+    .card-hover:hover { border-color: rgba(0, 229, 255, 0.5); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0, 102, 255, 0.25); }
+    .mono { font-family: 'SF Mono', 'Courier New', monospace; }
+    .toast-in { animation: toastIn .5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    .toast-out { animation: toastOut .4s ease forwards; }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(-120%) scale(0.9); } to { opacity: 1; transform: translateX(0) scale(1); } }
+    @keyframes toastOut { to { opacity: 0; transform: translateX(-120%) scale(0.9); } }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-14px); } }
+    .float-anim { animation: float 6s ease-in-out infinite; }
+    @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); } 50% { box-shadow: 0 0 40px rgba(0, 255, 136, 0.8); } }
+    .pulse-dot { animation: pulseGlow 2s infinite; }
+    details summary { cursor: pointer; list-style: none; }
+    details summary::-webkit-details-marker { display: none; }
+    details[open] .faq-icon { transform: rotate(45deg); }
+    .ticket-option.active { border-color: #00e5ff; background: rgba(0, 102, 255, 0.15); box-shadow: 0 0 30px rgba(0, 229, 255, 0.3); }
+    .progress-bar-fill { background: linear-gradient(90deg, #0066ff, #00e5ff, #00ff88); box-shadow: 0 0 20px rgba(0, 229, 255, 0.6); }
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #05060a; }
+    ::-webkit-scrollbar-thumb { background: #003791; border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: #0066ff; }
+    .reveal { opacity: 0; transform: translateY(30px); transition: all .7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .page { display: none; }
+    .page.active { display: block; }
+  </style>
+</head>
+<body class="antialiased">
+
+<!-- TOP BANNER -->
+<div class="fixed top-0 left-0 right-0 z-50 bg-[#003791] border-b border-cyan-500/30">
+  <div class="max-w-7xl mx-auto px-3 py-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs sm:text-sm">
+    <span class="text-cyan-300 font-semibold">🔥 RAFFLE ENDS IN</span>
+    <span id="bannerCountdown" class="mono font-bold text-white">--d --h --m --s</span>
+    <span class="hidden sm:inline text-slate-400">•</span>
+    <span class="text-emerald-400 font-semibold">ONLY 153 SPOTS LEFT</span>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="fixed top-[38px] left-0 right-0 z-40 bg-[#05060a]/80 backdrop-blur-xl border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="#" onclick="showPage('home');return false;" class="flex items-center gap-2">
+      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#0066ff] to-[#003791] flex items-center justify-center glow-blue">
+        <span class="font-black text-white text-sm">PS6</span>
+      </div>
+      <span class="font-extrabold tracking-tight text-white">RAFFLE<span class="text-cyan-400">.gg</span></span>
+    </a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+      <a href="#how" class="hover:text-cyan-400 transition">How it works</a>
+      <a href="#prize" class="hover:text-cyan-400 transition">Prize</a>
+      <a href="#payment" class="hover:text-cyan-400 transition">Payment</a>
+      <a href="#faq" class="hover:text-cyan-400 transition">FAQ</a>
+      <a href="#payment" class="btn-primary text-white px-5 py-2 rounded-lg font-bold">Enter Now</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active pt-[110px]">
+
+  <!-- HERO -->
+  <section class="relative overflow-hidden bg-grid">
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#0066ff]/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto px-4 py-12 md:py-20 grid md:grid-cols-2 gap-10 items-center relative">
+      <div class="reveal">
+        <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1.5 mb-6">
+          <span class="w-2 h-2 bg-emerald-400 rounded-full pulse-dot"></span>
+          <span class="text-emerald-400 text-xs font-bold uppercase tracking-wide">Live raffle • verified crypto</span>
+        </div>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight mb-5">
+          Win a <span class="text-gradient">PlayStation 6</span><br/>for just <span class="text-gradient">$10 in USDT</span>! 🎮
+        </h1>
+        <p class="text-lg text-slate-400 mb-8 max-w-lg">
+          One entry = one chance at a <strong class="text-white">$499 PS6 bundle</strong>. Pay with USDT (TRC20), get your lucky number by email, and watch the live draw.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 mb-8">
+          <a href="#payment" class="btn-primary text-white px-8 py-4 rounded-xl font-extrabold text-lg text-center">ENTER THE RAFFLE NOW →</a>
+          <a href="#how" class="border border-white/15 hover:border-cyan-400/50 text-white px-8 py-4 rounded-xl font-bold text-center transition">How it works</a>
+        </div>
+        <!-- Countdown -->
+        <div class="grid grid-cols-4 gap-2 sm:gap-3 max-w-md mb-6">
+          <div class="card rounded-xl p-2 sm:p-3 text-center"><div id="cd-days" class="text-2xl sm:text-3xl font-black mono text-cyan-400">00</div><div class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Days</div></div>
+          <div class="card rounded-xl p-2 sm:p-3 text-center"><div id="cd-hours" class="text-2xl sm:text-3xl font-black mono text-cyan-400">00</div><div class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Hours</div></div>
+          <div class="card rounded-xl p-2 sm:p-3 text-center"><div id="cd-mins" class="text-2xl sm:text-3xl font-black mono text-cyan-400">00</div><div class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Mins</div></div>
+          <div class="card rounded-xl p-2 sm:p-3 text-center"><div id="cd-secs" class="text-2xl sm:text-3xl font-black mono text-cyan-400">00</div><div class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Secs</div></div>
+        </div>
+        <!-- Progress -->
+        <div class="max-w-md">
+          <div class="flex justify-between text-xs font-semibold mb-1.5"><span class="text-slate-400">Spots filled</span><span class="text-cyan-400 mono"><span id="spotsFilled">847</span> / 1000</span></div>
+          <div class="h-2.5 bg-white/5 rounded-full overflow-hidden"><div id="progressFill" class="h-full progress-bar-fill rounded-full transition-all duration-700" style="width:84.7%"></div></div>
+        </div>
+      </div>
+
+      <!-- Hero SVG -->
+      <div class="relative reveal">
+        <div class="absolute inset-0 bg-gradient-to-tr from-[#0066ff]/30 to-[#00e5ff]/10 blur-3xl rounded-full scale-90"></div>
+        <div class="float-anim relative">
+          <svg viewBox="0 0 500 420" class="w-full drop-shadow-[0_30px_60px_rgba(0,102,255,0.4)]" role="img" aria-label="PlayStation 6 console hero illustration">
+            <defs>
+              <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a2233"/><stop offset="50%" stop-color="#0a0f1a"/><stop offset="100%" stop-color="#1a2233"/></linearGradient>
+              <linearGradient id="edgeGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#0066ff"/></linearGradient>
+              <radialGradient id="floorGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0066ff" stop-opacity="0.5"/><stop offset="100%" stop-color="#0066ff" stop-opacity="0"/></radialGradient>
+            </defs>
+            <ellipse cx="250" cy="370" rx="200" ry="30" fill="url(#floorGlow)"/>
+            <g transform="translate(90,110)">
+              <polygon points="0,130 160,80 320,130 160,180" fill="#0a0f1a" stroke="#0066ff" stroke-width="1.5" opacity="0.6"/>
+              <path d="M 20 100 L 160 55 L 300 100 L 300 175 L 160 220 L 20 175 Z" fill="url(#bodyGrad)" stroke="url(#edgeGrad)" stroke-width="2"/>
+              <path d="M 20 100 L 160 55 L 300 100 L 160 145 Z" fill="#0f1626" stroke="url(#edgeGrad)" stroke-width="2"/>
+              <path d="M 30 108 L 160 68 L 290 108" stroke="#00e5ff" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <rect x="60" y="140" width="120" height="6" rx="3" fill="#0066ff" opacity="0.8"/>
+              <circle cx="270" cy="150" r="5" fill="#00ff88"/>
+            </g>
+            <circle cx="80" cy="80" r="2" fill="#00e5ff" opacity="0.8"/>
+            <circle cx="420" cy="120" r="2.5" fill="#00ff88" opacity="0.7"/>
+            <circle cx="380" cy="320" r="2" fill="#0066ff" opacity="0.8"/>
+          </svg>
+        </div>
+        <div class="absolute -bottom-2 -left-2 card rounded-xl px-4 py-2 flex items-center gap-2"><span class="text-2xl">🏆</span><div><div class="text-xs text-slate-400 font-semibold">Market value</div><div class="font-black text-white">$499</div></div></div>
+      </div>
+    </div>
+
+    <!-- Trust Badges -->
+    <div class="max-w-7xl mx-auto px-4 pb-12">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="card rounded-xl p-4"><div class="font-bold text-sm text-white">🛡️ Audited raffle</div><div class="text-xs text-slate-500">Random.org verified</div></div>
+        <div class="card rounded-xl p-4"><div class="font-bold text-sm text-white">🔒 Crypto-secured</div><div class="text-xs text-slate-500">USDT TRC20 only</div></div>
+        <div class="card rounded-xl p-4"><div class="font-bold text-sm text-white">✓ Guaranteed delivery</div><div class="text-xs text-slate-500">Tracked + insured</div></div>
+        <div class="card rounded-xl p-4"><div class="font-bold text-sm text-white">⏱️ Instant entry</div><div class="text-xs text-slate-500">30-min confirmation</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="py-16 md:py-24">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-12 reveal">
+        <span class="text-cyan-400 font-bold text-sm uppercase tracking-widest">Simple & transparent</span>
+        <h2 class="text-3xl md:text-5xl font-black mt-2 mb-3">How it works</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto">Four steps. Crypto-only. No accounts, no cards.</p>
+      </div>
+      <div class="grid md:grid-cols-4 gap-4">
+        <div class="card card-hover rounded-2xl p-6 reveal"><div class="w-12 h-12 rounded-xl bg-[#003791] flex items-center justify-center font-black text-xl mb-4">1</div><h3 class="font-bold text-lg mb-2">Send $10 in USDT</h3><p class="text-sm text-slate-400">Send exactly $10 worth of USDT on the <strong class="text-cyan-400">TRON (TRC20)</strong> network.</p></div>
+        <div class="card card-hover rounded-2xl p-6 reveal"><div class="w-12 h-12 rounded-xl bg-[#003791] flex items-center justify-center font-black text-xl mb-4">2</div><h3 class="font-bold text-lg mb-2">Copy your TXID</h3><p class="text-sm text-slate-400">After sending, copy the transaction hash (TXID) from your wallet.</p></div>
+        <div class="card card-hover rounded-2xl p-6 reveal"><div class="w-12 h-12 rounded-xl bg-[#003791] flex items-center justify-center font-black text-xl mb-4">3</div><h3 class="font-bold text-lg mb-2">Submit TXID + email</h3><p class="text-sm text-slate-400">Paste your TXID and email in the form to register your entry.</p></div>
+        <div class="card card-hover rounded-2xl p-6 reveal"><div class="w-12 h-12 rounded-xl bg-[#003791] flex items-center justify-center font-black text-xl mb-4">4</div><h3 class="font-bold text-lg mb-2">Get your lucky number</h3><p class="text-sm text-slate-400">Receive your lucky number by email within 30 minutes.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIZE -->
+  <section id="prize" class="py-16 md:py-24">
+    <div class="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center">
+      <div class="reveal">
+        <span class="text-cyan-400 font-bold text-sm uppercase tracking-widest">Featured prize</span>
+        <h2 class="text-3xl md:text-5xl font-black mt-2 mb-4">PlayStation 6 Bundle</h2>
+        <p class="text-slate-400 mb-6">The next-gen console, fully loaded.</p>
+        <ul class="space-y-3 mb-8">
+          <li class="flex gap-3"><span class="text-emerald-400">✓</span><span><strong class="text-white">PS6 Console</strong> — 1TB SSD, 8K support</span></li>
+          <li class="flex gap-3"><span class="text-emerald-400">✓</span><span><strong class="text-white">DualSense 2 Controller</strong> — haptic feedback</span></li>
+          <li class="flex gap-3"><span class="text-emerald-400">✓</span><span><strong class="text-white">3 Digital Games</strong> — pre-installed</span></li>
+          <li class="flex gap-3"><span class="text-emerald-400">✓</span><span><strong class="text-white">12-month warranty</strong> — full coverage</span></li>
+        </ul>
+        <div class="card rounded-2xl p-5 flex items-center justify-between mb-6">
+          <div><div class="text-xs text-slate-500 font-semibold">Market value</div><div class="text-3xl font-black text-white">$499</div></div>
+          <div class="text-right"><div class="text-xs text-slate-500 font-semibold">Your cost</div><div class="text-3xl font-black text-gradient">$10</div></div>
+        </div>
+        <a href="#payment" class="btn-primary inline-block text-white px-8 py-4 rounded-xl font-extrabold text-lg">GET MY TICKET →</a>
+      </div>
+      <div class="reveal card rounded-3xl p-4">
+        <svg viewBox="0 0 500 400" class="w-full rounded-2xl bg-[#05060a]" role="img" aria-label="PS6 front view">
+          <ellipse cx="250" cy="340" rx="160" ry="22" fill="#0066ff" opacity="0.25"/>
+          <rect x="90" y="120" width="320" height="180" rx="10" fill="#0f1626" stroke="#0066ff" stroke-width="2"/>
+          <rect x="90" y="120" width="320" height="40" rx="10" fill="#1a2233"/>
+          <line x1="90" y1="160" x2="410" y2="160" stroke="#00e5ff" stroke-width="2"/>
+          <rect x="110" y="200" width="280" height="8" rx="4" fill="#0066ff"/>
+          <text x="250" y="270" text-anchor="middle" fill="#00e5ff" font-size="28" font-family="Inter" font-weight="900" letter-spacing="4">PS6</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAYMENT (CORE CTA) -->
+  <section id="payment" class="py-16 md:py-24 bg-[#030408]">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-12 reveal">
+        <span class="text-cyan-400 font-bold text-sm uppercase tracking-widest">Step 1 — Send payment</span>
+        <h2 class="text-3xl md:text-5xl font-black mt-2 mb-3">Enter the raffle</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto">Pay with <strong class="text-cyan-400">USDT on TRON (TRC20)</strong> only.</p>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-8">
+        <!-- Left: wallet -->
+        <div class="card rounded-3xl p-6 md:p-8">
+          <h3 class="text-xl font-bold mb-4">Send USDT (TRC20) to:</h3>
+          <div class="bg-[#05060a] border border-cyan-500/30 rounded-xl p-4 mb-3">
+            <div id="walletAddress" class="mono text-sm sm:text-base text-cyan-300 break-all font-bold">TH8ieZmdYvWkAm17b8wDDuhb5RYMFU5gJb</div>
+          </div>
+          <button onclick="copyAddress()" id="copyBtn" class="w-full btn-primary text-white font-bold py-3 rounded-xl mb-6">📋 Copy Address</button>
+
+          <div class="flex justify-center mb-6 bg-white p-4 rounded-2xl w-fit mx-auto">
+            <div id="qrcode"></div>
+          </div>
+
+          <div class="bg-amber-500/10 border border-amber-500/40 rounded-xl p-4 mb-4">
+            <p class="text-amber-400 text-xs font-bold flex items-start gap-2"><span>⚠️</span><span>ONLY send USDT on the TRON (TRC20) network. Any other coin or network = permanent loss of funds.</span></p>
+          </div>
+
+          <div class="space-y-2 text-sm text-slate-400">
+            <div class="flex gap-2"><span class="text-cyan-400 font-bold">1)</span><span>Open your wallet</span></div>
+            <div class="flex gap-2"><span class="text-cyan-400 font-bold">2)</span><span>Select USDT (TRC20)</span></div>
+            <div class="flex gap-2"><span class="text-cyan-400 font-bold">3)</span><span>Send exactly the ticket amount</span></div>
+            <div class="flex gap-2"><span class="text-cyan-400 font-bold">4)</span><span>Copy the TXID</span></div>
+            <div class="flex gap-2"><span class="text-cyan-400 font-bold">5)</span><span>Paste it below → Submit</span></div>
+          </div>
+        </div>
+
+        <!-- Right: form -->
+        <div class="card rounded-3xl p-6 md:p-8">
+          <h3 class="text-xl font-bold mb-4">Choose your tickets</h3>
+          <div class="grid grid-cols-3 gap-2 mb-6">
+            <button type="button" onclick="selectTicket(1)" data-ticket="1" class="ticket-option active border-2 border-white/10 rounded-xl p-3 text-center transition">
+              <div class="text-xs text-slate-400 mb-1">1 ticket</div>
+              <div class="font-black text-lg text-white">$10</div>
+            </button>
+            <button type="button" onclick="selectTicket(3)" data-ticket="3" class="ticket-option border-2 border-white/10 rounded-xl p-3 text-center transition relative">
+              <span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-cyan-500 text-black text-[9px] font-black px-2 py-0.5 rounded-full">POPULAR</span>
+              <div class="text-xs text-slate-400 mb-1">3 tickets</div>
+              <div class="font-black text-lg text-white">$25</div>
+            </button>
+            <button type="button" onclick="selectTicket(5)" data-ticket="5" class="ticket-option border-2 border-white/10 rounded-xl p-3 text-center transition">
+              <div class="text-xs text-slate-400 mb-1">5 tickets</div>
+              <div class="font-black text-lg text-white">$40</div>
+            </button>
+          </div>
+
+          <form id="entryForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold mb-1.5">Your email</label>
+              <input type="email" id="email" required placeholder="you@example.com" class="w-full bg-[#05060a] border border-white/10 focus:border-cyan-400 rounded-xl px-4 py-3 text-white" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-1.5">Transaction hash (TXID)</label>
+              <input type="text" id="txid" required placeholder="Paste your TRC20 TXID here" class="w-full bg-[#05060a] border border-white/10 focus:border-cyan-400 rounded-xl px-4 py-3 text-white mono text-sm" />
+            </div>
+            <button type="submit" class="w-full btn-primary text-white font-extrabold py-4 rounded-xl text-lg">SUBMIT ENTRY →</button>
+            <p class="text-xs text-slate-500 text-center">Your entry will be confirmed within 30 minutes after network confirmation.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-16 md:py-24">
+    <div class="max-w-3xl mx-auto px-4">
+      <h2 class="text-3xl md:text-5xl font-black text-center mb-12">FAQ</h2>
+      <div class="space-y-3">
+        <details class="card rounded-xl p-5"><summary class="flex justify-between font-bold">How does the raffle work?<span class="faq-icon text-cyan-400 text-xl">+</span></summary><p class="text-slate-400 mt-3 text-sm">Send $10 in USDT (TRC20), submit your TXID + email, and receive a lucky number. A random draw picks the winner.</p></details>
+        <details class="card rounded-xl p-5"><summary class="flex justify-between font-bold">Why USDT TRC20 only?<span class="faq-icon text-cyan-400 text-xl">+</span></summary><p class="text-slate-400 mt-3 text-sm">Fast transactions, low fees, and full transparency.</p></details>
+        <details class="card rounded-xl p-5"><summary class="flex justify-between font-bold">What if I send the wrong coin/network?<span class="faq-icon text-cyan-400 text-xl">+</span></summary><p class="text-slate-400 mt-3 text-sm">Funds are lost permanently. Please double-check before sending.</p></details>
+        <details class="card rounded-xl p-5"><summary class="flex justify-between font-bold">How do I get my TXID?<span class="faq-icon text-cyan-400 text-xl">+</span></summary><p class="text-slate-400 mt-3 text-sm">After sending, open your wallet's transaction details and copy the hash.</p></details>
+        <details class="card rounded-xl p-5"><summary class="flex justify-between font-bold">When is the draw?<span class="faq-icon text-cyan-400 text-xl">+</span></summary><p class="text-slate-400 mt-3 text-sm">The draw date is shown in the countdown. Live streamed.</p></details>
+        <details class="card rounded-xl p-5"><summary class="flex justify-between font-bold">Is the raffle legal?<span class="faq-icon text-cyan-400 text-xl">+</span></summary><p class="text-slate-400 mt-3 text-sm">Yes — comply with local laws. 18+ only.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/5 py-10 text-center text-sm text-slate-500">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex flex-wrap justify-center gap-4 mb-4">
+        <a href="#" class="hover:text-cyan-400">Terms</a>
+        <a href="#" class="hover:text-cyan-400">Privacy</a>
+        <a href="#" class="hover:text-cyan-400">Rules</a>
+        <a href="#" class="hover:text-cyan-400">Contact</a>
+      </div>
+      <p>© 2026 PS6Raffle.gg — All rights reserved.</p>
+      <p class="mt-2 text-xs">18+ only. Play responsibly. No guaranteed wins.</p>
+    </div>
+  </footer>
+</div>
+
+<!-- THANK YOU PAGE -->
+<div id="page-thanks" class="page pt-[110px]">
+  <div class="max-w-2xl mx-auto px-4 py-20 text-center">
+    <div class="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-6">
+      <span class="text-5xl">✅</span>
+    </div>
+    <h1 class="text-4xl font-black mb-4">Entry received!</h1>
+    <p class="text-slate-400 mb-8">We'll verify your TXID and email your lucky number within 30 minutes.</p>
+    <div class="card rounded-2xl p-6 text-left mb-6">
+      <div class="mb-3"><div class="text-xs text-slate-500 font-semibold">Email</div><div id="summaryEmail" class="text-white font-bold"></div></div>
+      <div><div class="text-xs text-slate-500 font-semibold">TXID</div><div id="summaryTxid" class="text-cyan-300 font-bold mono text-sm break-all"></div></div>
+    </div>
+    <button onclick="showPage('home')" class="btn-primary text-white px-8 py-3 rounded-xl font-bold">← Back to home</button>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toastContainer" class="fixed bottom-4 left-4 z-50 space-y-2 max-w-xs"></div>
+
+<!-- SCRIPTS -->
+<script>
+  // ---------- PAGES ----------
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ---------- COUNTDOWN ----------
+  const endDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  function updateCountdown() {
+    const diff = endDate - new Date();
+    if (diff <= 0) return;
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    const pad = n => String(n).padStart(2, '0');
+    ['cd-days','cd-hours','cd-mins','cd-secs'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=pad([d,h,m,s][i])});
+    const banner = document.getElementById('bannerCountdown');
+    if (banner) banner.textContent = `${pad(d)}d ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+  }
+  setInterval(updateCountdown, 1000); updateCountdown();
+
+  // ---------- WALLET / QR ----------
+  const WALLET = "TH8ieZmdYvWkAm17b8wDDuhb5RYMFU5gJb";
+  window.addEventListener('DOMContentLoaded', () => {
+    try {
+      new QRCode(document.getElementById("qrcode"), {
+        text: WALLET, width: 180, height: 180,
+        colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
+      });
+    } catch(e) { console.warn('QR error', e); }
+  });
+
+  function copyAddress() {
+    navigator.clipboard.writeText(WALLET).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✅ Copied!';
+      btn.style.background = 'linear-gradient(135deg, #00ff88 0%, #009955 100%)';
+      setTimeout(() => {
+        btn.textContent = '📋 Copy Address';
+        btn.style.background = '';
+      }, 2000);
+    });
+  }
+
+  // ---------- TICKETS ----------
+  let selectedTickets = 1;
+  function selectTicket(n) {
+    selectedTickets = n;
+    document.querySelectorAll('.ticket-option').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-ticket="${n}"]`).classList.add('active');
+  }
+
+  // ---------- FORM ----------
+  document.getElementById('entryForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const txid = document.getElementById('txid').value.trim();
+    if (!email || !txid) return;
+    if (txid.length < 20) {
+      alert('TXID inválido. Copie o hash completo da sua transação.');
+      return;
+    }
+    const entry = { email, txid, tickets: selectedTickets, date: new Date().toISOString() };
+    const all = JSON.parse(localStorage.getItem('ps6_entries') || '[]');
+    all.push(entry);
+    localStorage.setItem('ps6_entries', JSON.stringify(all));
+
+    document.getElementById('summaryEmail').textContent = email;
+    document.getElementById('summaryTxid').textContent = txid;
+    showPage('thanks');
+  });
+
+  // ---------- TOAST NOTIFICATIONS ----------
+  const fakeUsers = [
+    { name: 'Michael', city: 'London', amount: 10, tickets: 1 },
+    { name: 'Sarah', city: 'Lagos', amount: 25, tickets: 3 },
+    { name: 'David', city: 'New York', amount: 40, tickets: 5 },
+    { name: 'Ana', city: 'Lisbon', amount: 10, tickets: 1 },
+    { name: 'Yuki', city: 'Tokyo', amount: 25, tickets: 3 },
+    { name: 'Carlos', city: 'Madrid', amount: 10, tickets: 1 },
+    { name: 'Emma', city: 'Berlin', amount: 40, tickets: 5 },
+    { name: 'Liam', city: 'Sydney', amount: 10, tickets: 1 },
+  ];
+
+  function showToast() {
+    const u = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
+    const initials = u.name[0];
+    const colors = ['#0066ff','#00e5ff','#00ff88','#a855f7','#f59e0b'];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const mins = Math.floor(Math.random() * 10) + 1;
+
+    const el = document.createElement('div');
+    el.className = 'toast-in card rounded-2xl p-3 flex items-center gap-3 shadow-2xl';
+    el.innerHTML = `
+      <div style="background:${color}" class="w-10 h-10 rounded-full flex items-center justify-center font-black text-white shrink-0">${initials}</div>
+      <div class="flex-1 min-w-0">
+        <div class="text-xs font-bold text-white truncate">${u.name} from ${u.city}</div>
+        <div class="text-[11px] text-slate-400">Paid $${u.amount} • ${u.tickets} ticket${u.tickets>1?'s':''} • ${mins}m ago</div>
+      </div>
+      <span class="text-emerald-400 text-lg">✓</span>
+    `;
+    document.getElementById('toastContainer').appendChild(el);
+
+    setTimeout(() => {
+      el.classList.remove('toast-in');
+      el.classList.add('toast-out');
+      setTimeout(() => el.remove(), 400);
+    }, 5500);
+  }
+
+  setTimeout(showToast, 4000);
+  setInterval(() => {
+    if (Math.random() > 0.3) showToast();
+  }, 18000);
+
+  // ---------- SCROLL REVEAL ----------
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
